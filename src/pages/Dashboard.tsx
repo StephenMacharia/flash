@@ -34,8 +34,25 @@ export default function Dashboard() {
     };
   }, [tickets]);
 
-  function handleRaiseTicket(input: { issue: string; category: string; priority: any }) {
-    addTicket({ userEmail: currentUser!.email, ...input });
+  function handleRaiseTicket(input: {
+    title: string;
+    description: string;
+    category: string;
+    subcategory: string;
+    priority: any;
+    impactLevel: any;
+    attachments: any[];
+  }) {
+    addTicket({
+      userEmail: currentUser!.email,
+      title: input.title,
+      description: input.description,
+      category: input.category,
+      subcategory: input.subcategory,
+      priority: input.priority,
+      impactLevel: input.impactLevel,
+      attachments: input.attachments,
+    });
     setModalOpen(false);
   }
 
@@ -48,7 +65,9 @@ export default function Dashboard() {
             <div className="text-xs font-semibold uppercase tracking-widest text-[#64748B]">
               National Treasury
             </div>
-            <div className="text-sm font-bold text-[#1F2937]">Employee Dashboard</div>
+            <div className="text-sm font-bold text-[#1F2937]">
+              Employee Dashboard
+            </div>
           </div>
           <button
             onClick={logout}
@@ -61,8 +80,12 @@ export default function Dashboard() {
         {/* Greeting banner */}
         <div className="flex flex-col justify-between gap-4 rounded-2xl bg-gradient-to-r from-[#0D98BA] to-[#086A82] p-6 text-white sm:flex-row sm:items-center">
           <div>
-            <div className="text-sm font-medium text-teal-50/90">{greeting()}</div>
-            <div className="mt-1 text-2xl font-bold">{currentUser.fullName}</div>
+            <div className="text-sm font-medium text-teal-50/90">
+              {greeting()}
+            </div>
+            <div className="mt-1 text-2xl font-bold">
+              {currentUser.fullName}
+            </div>
             <div className="mt-1 text-sm text-teal-50/80">
               {currentUser.department} · {currentUser.email}
             </div>
@@ -90,28 +113,36 @@ export default function Dashboard() {
         {/* Ticket history + quick actions */}
         <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
           <div className="lg:col-span-2 rounded-2xl bg-white p-6 shadow-sm">
-            <h2 className="text-base font-bold text-[#1F2937]">Ticket History</h2>
+            <h2 className="text-base font-bold text-[#1F2937]">
+              Ticket History
+            </h2>
             <div className="mt-4 overflow-x-auto">
               <table className="w-full text-left text-sm">
                 <thead>
                   <tr className="border-b border-[#E2E8F0] text-xs uppercase tracking-wide text-[#64748B]">
                     <th className="pb-2 pr-4">Date/Time</th>
                     <th className="pb-2 pr-4">Ticket ID</th>
-                    <th className="pb-2 pr-4">Issue</th>
-                    <th className="pb-2 pr-4">Category/Priority</th>
+                    <th className="pb-2 pr-4">Title</th>
+                    <th className="pb-2 pr-4">Impact / Priority</th>
                     <th className="pb-2 pr-4">Status</th>
                   </tr>
                 </thead>
                 <tbody>
                   {tickets.length === 0 && (
                     <tr>
-                      <td colSpan={5} className="py-6 text-center text-sm text-[#64748B]">
+                      <td
+                        colSpan={5}
+                        className="py-6 text-center text-sm text-[#64748B]"
+                      >
                         No tickets found.
                       </td>
                     </tr>
                   )}
                   {tickets.map((t) => (
-                    <tr key={t.id} className="border-b border-[#F1F5F9] last:border-0">
+                    <tr
+                      key={t.id}
+                      className="border-b border-[#F1F5F9] last:border-0"
+                    >
                       <td className="py-3 pr-4 text-[#64748B]">
                         {new Date(t.dateTime).toLocaleString(undefined, {
                           month: "short",
@@ -120,10 +151,12 @@ export default function Dashboard() {
                           minute: "2-digit",
                         })}
                       </td>
-                      <td className="py-3 pr-4 font-medium text-[#1F2937]">{t.id}</td>
-                      <td className="py-3 pr-4 text-[#1F2937]">{t.issue}</td>
+                      <td className="py-3 pr-4 font-medium text-[#1F2937]">
+                        {t.id}
+                      </td>
+                      <td className="py-3 pr-4 text-[#1F2937]">{t.title}</td>
                       <td className="py-3 pr-4 text-[#64748B]">
-                        {t.category} / {t.priority}
+                        {t.impactLevel} / {t.priority}
                       </td>
                       <td className="py-3 pr-4">
                         <span
@@ -140,9 +173,14 @@ export default function Dashboard() {
           </div>
 
           <div className="rounded-2xl bg-white p-6 shadow-sm">
-            <h2 className="text-base font-bold text-[#1F2937]">Quick Actions</h2>
+            <h2 className="text-base font-bold text-[#1F2937]">
+              Quick Actions
+            </h2>
             <div className="mt-4 grid grid-cols-2 gap-3">
-              <QuickAction label="Raise a Ticket" onClick={() => setModalOpen(true)} />
+              <QuickAction
+                label="Raise a Ticket"
+                onClick={() => setModalOpen(true)}
+              />
               <QuickAction label="Request Assistance" />
               <QuickAction label="Ticket History" />
               <QuickAction label="My Profile" />
@@ -152,7 +190,10 @@ export default function Dashboard() {
       </div>
 
       {modalOpen && (
-        <RaiseTicketModal onClose={() => setModalOpen(false)} onSubmit={handleRaiseTicket} />
+        <RaiseTicketModal
+          onClose={() => setModalOpen(false)}
+          onSubmit={handleRaiseTicket}
+        />
       )}
     </div>
   );
@@ -167,7 +208,13 @@ function StatCard({ label, value }: { label: string; value: number }) {
   );
 }
 
-function QuickAction({ label, onClick }: { label: string; onClick?: () => void }) {
+function QuickAction({
+  label,
+  onClick,
+}: {
+  label: string;
+  onClick?: () => void;
+}) {
   return (
     <button
       onClick={onClick}

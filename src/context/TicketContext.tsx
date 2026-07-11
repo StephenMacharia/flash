@@ -4,7 +4,7 @@ import React, {
   useState,
   type ReactNode,
 } from "react";
-import type { Ticket, TicketPriority } from "../types";
+import type { Ticket, TicketPriority, ImpactLevel, Attachment } from "../types";
 import { DUMMY_TICKETS } from "../data/dummyTickets";
 
 const TICKETS_KEY = "hd_tickets";
@@ -14,15 +14,17 @@ interface TicketContextValue {
   getTicketsForUser: (email: string) => Ticket[];
   addTicket: (input: {
     userEmail: string;
-    issue: string;
+    title: string;
+    description: string;
     category: string;
+    subcategory?: string;
     priority: TicketPriority;
+    impactLevel: ImpactLevel;
+    attachments?: Attachment[];
   }) => Ticket;
 }
 
-const TicketContext = createContext<TicketContextValue | undefined>(
-  undefined
-);
+const TicketContext = createContext<TicketContextValue | undefined>(undefined);
 
 function loadTickets(): Ticket[] {
   const raw = localStorage.getItem(TICKETS_KEY);
@@ -49,23 +51,32 @@ export function TicketProvider({ children }: { children: ReactNode }) {
     return tickets
       .filter((t) => t.userEmail.toLowerCase() === email.toLowerCase())
       .sort(
-        (a, b) => new Date(b.dateTime).getTime() - new Date(a.dateTime).getTime()
+        (a, b) =>
+          new Date(b.dateTime).getTime() - new Date(a.dateTime).getTime(),
       );
   }
 
   function addTicket(input: {
     userEmail: string;
-    issue: string;
+    title: string;
+    description: string;
     category: string;
+    subcategory?: string;
     priority: TicketPriority;
+    impactLevel: ImpactLevel;
+    attachments?: Attachment[];
   }): Ticket {
     const newTicket: Ticket = {
-      id: `TCK-${Math.floor(2000 + Math.random() * 8000)}`,
+      id: `IT-${Math.floor(1000 + Math.random() * 9000)}`,
       userEmail: input.userEmail,
       dateTime: new Date().toISOString(),
-      issue: input.issue,
+      title: input.title,
+      description: input.description,
       category: input.category,
+      subcategory: input.subcategory,
       priority: input.priority,
+      impactLevel: input.impactLevel,
+      attachments: input.attachments || [],
       status: "Open",
     };
     const next = [newTicket, ...tickets];
