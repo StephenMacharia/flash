@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useTickets } from "../context/TicketContext";
 import RaiseTicketModal from "../components/RaiseTicketModal";
@@ -35,6 +36,7 @@ function Icon({ name, className = "" }: { name: IconName; className?: string }) 
 }
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const { currentUser, logout } = useAuth();
   const { getTicketsForUser, addTicket } = useTickets();
   const [modalOpen, setModalOpen] = useState(false);

@@ -16,6 +16,8 @@ interface AuthContextValue {
   login: (email: string, password: string) => Promise<User>;
   signup: (data: Omit<User, "id">) => Promise<User>;
   logout: () => void;
+  updateProfile: (updates: { fullName: string; email: string }) => Promise<User>;
+  changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -92,8 +94,59 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem(SESSION_KEY);
   }
 
+  async function updateProfile(updates: { fullName: string; email: string }): Promise<User> {
+    await new Promise((r) => setTimeout(r, 400));
+
+    if (!currentUser) {
+      throw new Error("You must be logged in to update your profile.");
+    }
+
+    const nextEmail = updates.email.trim();
+    const emailTaken = users.some(
+      (u) =>
+        u.id !== currentUser.id &&
+        u.email.toLowerCase() === nextEmail.toLowerCase()
+    );
+    if (emailTaken) {
+      throw new Error("An account with this email already exists.");
+    }
+
+    const updatedUser: User = {
+      ...currentUser,
+      fullName: updates.fullName.trim(),
+      email: nextEmail,
+    };
+
+    const nextUsers = users.map((u) => (u.id === currentUser.id ? updatedUser : u));
+    persistUsers(nextUsers);
+    setCurrentUser(updatedUser);
+    localStorage.setItem(SESSION_KEY, updatedUser.email);
+    return updatedUser;
+  }
+
+  async function changePassword(currentPassword: string, newPassword: string): Promise<void> {
+    await new Promise((r) => setTimeout(r, 400));
+
+    if (!currentUser) {
+      throw new Error("You must be logged in to change your password.");
+    }
+    if (currentUser.password !== currentPassword) {
+      throw new Error("Current password is incorrect.");
+    }
+    if (newPassword.length < 8) {
+      throw new Error("New password must be at least 8 characters.");
+    }
+
+    const updatedUser: User = { ...currentUser, password: newPassword };
+    const nextUsers = users.map((u) => (u.id === currentUser.id ? updatedUser : u));
+    persistUsers(nextUsers);
+    setCurrentUser(updatedUser);
+  }
+
   return (
-    <AuthContext.Provider value={{ currentUser, login, signup, logout }}>
+    <AuthContext.Provider
+      value={{ currentUser, login, signup, logout, updateProfile, changePassword }}
+    >
       {children}
     </AuthContext.Provider>
   );
