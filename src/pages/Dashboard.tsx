@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useTickets } from "../context/TicketContext";
 import RaiseTicketModal from "../components/RaiseTicketModal";
@@ -18,6 +19,7 @@ const statusStyles: Record<TicketStatus, string> = {
 };
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const { currentUser, logout } = useAuth();
   const { getTicketsForUser, addTicket } = useTickets();
   const [modalOpen, setModalOpen] = useState(false);
@@ -74,7 +76,10 @@ export default function Dashboard() {
             >
               Raise a Ticket
             </button>
-            <button className="rounded-lg border border-white/50 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10">
+            <button
+              onClick={() => navigate("/profile")}
+              className="rounded-lg border border-white/50 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10"
+            >
               My Profile
             </button>
           </div>
@@ -145,7 +150,7 @@ export default function Dashboard() {
               <QuickAction label="Raise a Ticket" onClick={() => setModalOpen(true)} />
               <QuickAction label="Request Assistance" />
               <QuickAction label="Ticket History" />
-              <QuickAction label="My Profile" />
+              <QuickAction label="My Profile" onClick={() => navigate("/profile")} />
             </div>
           </div>
         </div>
