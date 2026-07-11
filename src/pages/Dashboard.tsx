@@ -48,7 +48,7 @@ export default function Dashboard() {
   }), [tickets]);
 
   function handleRaiseTicket(input: { issue: string; category: string; priority: any }) {
-    addTicket({ userEmail: currentUser.email, ...input });
+    addTicket({ userEmail: currentUser!.email, ...input });
     setModalOpen(false);
   }
 
